@@ -1,0 +1,132 @@
+Introduction
+Mobile devices, such as the Windows Mobile-based Pocket PCs, have grown significantly popular over the last 
+several years. In the car, on a plane, or out in the middle of nowhere, applications on the device can operate 
+without a connection to any other computers, the Internet, or intranet. Devices can then partner with a desktop 
+computer system by means of a modem, network card, or simply by placing the mobile device in a cradle. New 
+or modified data on either the device or desktop computer system is then automatically migrated and 
+synchronized.
+Currently, the major disconnected applications for these devices are used for e-mail and contact management. 
+More and more businesses, however, want to enable users with applications beyond basic e-mail and contact 
+management. Businesses want to bring functionality from their enterprise applications to the mobile device.
+There are many things a developer needs to take into account when identifying scenarios suitable for the mobile 
+device, such as working with mobile form factor devices and designing and implementing mobile business 
+functionality. The core functionality of these applications, communication management and data exchange 
+between device and enterprise servers, can be the most difficult to implement because you are dealing with 
+intermittent connections and data which can be modified offline. Communication issues can involve working with 
+various protocols, socket programming, and managing communication peripherals such as modems and 
+network cards. Data exchange issues can involve guaranteeing delivery of data, handling delivery failures, and 
+effective delivery of varying types of data of different sizes. The functionality of these core applications can be 
+time consuming and expensive to implement and test.
+Microsoft has significantly reduced the complexity of building mobile enterprise applications with the Windows
+Mobile platform including the Microsoft® .NET Compact Framework and Microsoft SQL Server™ CE. These
+technologies encapsulate the complex tasks of communication management and data exchange. With the
+Windows Mobile platform, enterprise developers can build mobile applications quicker, cheaper, and with
+development talent that is more widely available.
+Why Disconnect?
+Average rating:
+7 out of 9
+Rate this page
+Print this page
+E-mail this pageArchitecting Disconnected Mobile Applications Using a Service ... http://msdn.microsoft.com/library/en-us/dnppcgen/html/develop_...
+2 of 11 3/12/2006 2:23 PM
+Most developers construct applications with the assumption that the connection to the server-side data store is 
+always available to the application. If the connection becomes unavailable, the application might not function. 
+For Web-based applications, if the connection is not available, the application is also unlikely to be available.
+When developing disconnected applications, companies need to make a critical decision about how they want to 
+enable enterprise applications on a mobile device. On the surface, it looks feasible to assume connectivity by 
+means of network cards, modems, or telephone carrier networks. Wireless carrier coverage in many countries is 
+nearly complete, and this is a big justification for some companies to retool their Web applications for rendering 
+in a mobile browser.
+But total coverage isn't a guarantee. Users are going to need to use applications when their modem or network 
+card is unavailable or when their carrier network coverage is degraded or unavailable. What if the user is in an 
+elevator or underground or the local network cells are down? Even if coverage is available, a roaming user
+might not want to pay the extra fees to connect. For these reasons, mobile applications should be designed not 
+to rely on a network connection to provide functionality. Connectivity can be the best-case scenario for an 
+application but should not be required for using the application.
+Note   Two typical and well-defined scenarios that are enabled by disconnected applications are 
+Field Service and Sales Force Automation programs. Further information about implementing 
+these scenarios can be found in the article Northwind Pocket Service: Field Service for Windows 
+Mobile-based Pocket PCs.
+Building Autonomous Applications
+Development models for mobile applications range from thin clients built by using Web technologies to fully 
+autonomous smart clients that exchange data with the server when connectivity permits. Full autonomy is the 
+most compelling case for business applications because of the unlikely availability of full network coverage at all 
+times. Autonomous clients can be built by using technologies such as Web page caching and forwarding as well 
+as fully functional applications that can use files or relational databases to store data. 
+The autonomous mobile application typically needs to interact with a server-side business application that needs 
+to be mobilized. This is an important consideration for developers because this interaction must often resolve an 
+impedance mismatch between the mobile application architecture and the existing business application 
+architecture, which could be caused one or more of the following factors:
+Mobile applications that contain a subset of the total business data
+Mobile applications that contain a subset of the total business rules
+Data schema and storage engine differences
+Imagine a disconnected autonomous mobile application that requires a product catalog. A salesperson using this 
+application offline might not have the most up-to-date prices on the company products. Similarly it is unlikely 
+that an application running on a Pocket PC device contains a comprehensive tax calculator for all regions of the 
+world. 
+Data stored by most business applications does not make sense unless it is viewed through the business logic of 
+that application. One way to look at mobile application development is that the mobile application is simply an 
+agent for a server-side application and not the final authority for business processes. It initiates processes and 
+submits data and then lets the server-side application complete and validate the input through the use of 
+standard interfaces. This division of labor, where the server is the master, is not always possible, but it is valid 
+for many scenarios. When the mobile device is used as the master for business data storage and execution of 
+business rules, difficult requirements are imposed on the device, such as data durability and business logic 
+processing. 
+A simple time clock application is an example: a complicated Enterprise Resource Planning (ERP) product 
+supports employee time management functionality. This functionality needs to be accessed by an employee 
+badge scanner application running on a low-powered device. While the ERP application cannot trust the badge 
+scanner application to run critical business logic, such as vacation balance update, it does allow the application 
+to tell it when the employee comes and goes to work. In this interaction, the ERP application is the master. It 
+protects its business logic and data from the outside world but allows the outside world to submit input, which it 
+then either accepts or rejects. A standard interface is needed to bridge the gap between the simple scanner 
+application (the agent) and the complex ERP application (the service). This paradigm is known as a Architecting Disconnected Mobile Applications Using a Service ... http://msdn.microsoft.com/library/en-us/dnppcgen/html/develop_...
+3 of 11 3/12/2006 2:23 PM
+service-oriented architecture.
+Service-Oriented Architecture
+Service-oriented architecture (SOA) aims to solve the problem of distributed application development. A service 
+can be described as an application that exposes a message-based (asynchronous) interface, encapsulates its 
+data, and manages ACID (Atomic, Consistent, Isolated, Durable) transactions (using the two-phase commit 
+protocol) within its data sources. Generally, SOA is defined as a set of service providers that expose their 
+functionality through public interfaces. The interfaces exposed by the service providers can then be individually 
+consumed or aggregated into composite service providers.
+While the composition of services into aggregate services is a powerful concept in SOA, an equally powerful 
+concept is the definition of individual service characteristics. These characteristics are what make SOA highly 
+suitable for mobile applications, where client and server typically share very little in terms of hardware and 
+software capabilities.
+Services may also provide RPC-style interfaces if requirements dictate. However, request-response scenarios 
+are typically avoided by services builders. Synchronous request-response scenarios make it difficult to decouple 
+services from their clients and make it difficult for a service to have well-defined service level agreements, such 
+as uptime and performance guarantees.
+Services are typically constructed in the following four tiers:
+Interface 
+Business process façade
+Business rules 
+Data access 
+Note   An additional tier, the presentation tier, is constructed independently and is not part of a
+service. Like other clients, the presentation tier communicates with the service by means of one 
+of the service interfaces.
+The interface is the bridge between clients of a service and the service's business process façade. A single
+service can have multiple interfaces, such as Web services, queuing systems, or simple file shares. Generally, a
+service provides a coarse stateless interface — for example, UpdateCustomer(Customer) instead of 
+UpdateCustomerName(id, string).
+The business process façade is called by means of the interfaces and then implements the controller pattern to
+combine discrete business rules into more coarse processes. The façade also provides the translation facilities to
+convert data in the private internal schema of a service to the service's public schema.
+The business rules encapsulate atomic business operations that can be orchestrated by the façade. Correct
+factorization of the business rule layer is crucial for reuse of code within a service. An example of the difference 
+between a business process and a business rule is the following: accepting an order document from a customer 
+is a business process, whereas checking the availability of line items and calculating the sales tax are business 
+rules. Services typically expose only coarse processes and not discrete rules.
+The complete encapsulation of data access is one of the most important tenets of a service. Business processes 
+and rules work with one or more data access APIs in a service. Services guard their data by enforcing all 
+business and data integrity rules and do not allow outside clients to participate in any ACID transactions that 
+would put a service at the mercy of the client in terms of possible concurrency and locks. (Consider a client that 
+enters into a transaction with a service and then proceeds to display a message box.) Services are responsible 
+for the state of data in their control; they are the final word for their data.
+Agents
+The cost associated with constructing services with coarse interfaces, fully encapsulated business logic, and data 
+access layers is that building client applications becomes more difficult. Business logic is hidden from client 
+applications. Client applications cannot query the state of data. A solution comes in the form of agents.
+Agents can be defined as a "smart proxies" that can serve as intermediaries between a service and its clients. 
+Agents can be simple proxy classes or full-fledged applications. Agents build on the location independence and 
+availability provided by services. They also add functionality that makes interacting with services easier and
